@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
-    const startBtn = document.getElementById('start-btn') as HTMLButtonElement;
-    const stopBtn = document.getElementById('stop-btn') as HTMLButtonElement;
+    const startBtn = document.querySelector('.start-btn') as HTMLButtonElement;
+    const stopBtn = document.querySelector('.stop-btn') as HTMLButtonElement;
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
     let finalTranscript: string = '';  
@@ -26,6 +26,31 @@ document.addEventListener("DOMContentLoaded", () => {
             startBtn.disabled = false;
             stopBtn.disabled = true;
             console.log("stop rec");
-        })
+        });
+
+        recogintion.onresult = (event: any) => {
+            let buffer = "";
+            for (let i  = event.resultIndex; i < event.results.length; ++i) {
+                const transcript = event.results[i][0].transcript;
+                
+                if (event.results[i].isFinal) {
+                    finalTranscript += transcript + ' ';
+                } else {
+                    buffer += transcript;
+                }
+            }
+        };
+
+        recogintion.onend = () => {
+            console.log("rec ended");
+            if (finalTranscript) {
+                console.log("final transcript: ", finalTranscript);
+            }
+        }
+
+        recogintion.onerror = (event: any) => {
+            console.log("speech rec err: ", event.error);
+        }
+
     }
 });
